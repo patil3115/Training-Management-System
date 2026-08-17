@@ -1,0 +1,27 @@
+# .NET / C#
+bin/
+obj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+.vs/
+.vscode/
+
+# SQLite DB
+*.db
+*.db-shm
+*.db-wal
+
+# Node / Frontend
+node_modules/
+dist/
+dist-ssr/
+*.local
+.env.local
+.env.*.local
+
+# OS Files
+Thumbs.db
+[Dd]esktop.ini
+.DS_Store
