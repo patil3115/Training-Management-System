@@ -165,4 +165,102 @@ public class CoursesController : ControllerBase
 
         return CreatedAtAction(nameof(GetCourse), new { id = course.Id }, response);
     }
+
+    /// <summary>
+    /// PUT /api/courses/{id}
+    /// Updates an existing course.
+    /// </summary>
+    [HttpPut("{id}")]
+    public async Task<ActionResult<CourseResponseDto>> UpdateCourse(int id, [FromBody] CourseUpdateDto dto)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(new ErrorResponseDto
+            {
+                Message = "Validation failed.",
+                Errors = ModelState
+                    .Where(x => x.Value?.Errors.Count > 0)
+                    .ToDictionary(
+                        kvp => kvp.Key,
+                        kvp => kvp.Value!.Errors.Select(e => e.ErrorMessage).ToArray()
+                    )
+            });
+        }
+
+        // Validate: EndDate >= StartDate
+        if (dto.EndDate < dto.StartDate)
+        {
+            return BadRequest(new ErrorResponseDto
+            {
+                Message = "Validation failed.",
+                Errors = new Dictionary<string, string[]>
+                {
+                    { "EndDate", new[] { "End date cannot be earlier than start date." } }
+                }
+            });
+        }
+
+        var course = await _context.Courses
+            .Include(c => c.Enrollments)
+            .FirstOrDefaultAsync(c => c.Id == id);
+
+        if (course == null)
+        {
+            return NotFound(new ErrorResponseDto { Message = "Course not found." });
+        }
+
+        course.Title = dto.Title;
+        course.Description = dto.Description;
+        course.Category = dto.Category;
+        course.DurationHours = dto.DurationHours;
+        course.Level = dto.Level;
+        course.StartDate = dto.StartDate;
+        course.EndDate = dto.EndDate;
+
+        await _context.SaveChangesAsync();
+
+        var response = new CourseResponseDto
+        {
+            Id = course.Id,
+            Title = course.Title,
+            Description = course.Description,
+            Category = course.Category.ToString(),
+            Level = course.Level.ToString(),
+            DurationHours = course.DurationHours,
+            StartDate = course.StartDate,
+            EndDate = course.EndDate,
+            CurrentEnrollmentCount = course.Enrollments.Count
+        };
+
+        return Ok(response);
+    }
+
+    /// <summary>
+    /// DELETE /api/courses/{id}
+    /// Deletes a course. Prevents deletion if learners are enrolled in the course.
+    /// </summary>
+    [HttpDelete("{id}")]
+    public async Task<ActionResult> DeleteCourse(int id)
+    {
+        var course = await _context.Courses.FindAsync(id);
+        if (course == null)
+        {
+            return NotFound(new ErrorResponseDto { Message = "Course not found." });
+        }
+
+        // Check if any enrollments exist for this course
+        var hasEnrollments = await _context.Enrollments.AnyAsync(e => e.CourseId == id);
+        if (hasEnrollments)
+        {
+            return Conflict(new ErrorResponseDto
+            {
+                Message = "This course cannot be deleted because learners are enrolled in it."
+            });
+        }
+
+        _context.Courses.Remove(course);
+        await _context.SaveChangesAsync();
+
+        return Ok(new { message = "Course deleted successfully." });
+    }
 }

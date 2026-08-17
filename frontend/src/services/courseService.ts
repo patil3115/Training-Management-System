@@ -1,4 +1,4 @@
-import { apiGet, apiPost } from './api';
+import { apiGet, apiPost, apiPut, apiDelete } from './api';
 import type { Course, CourseFilters } from '../types/course';
 
 /**
@@ -35,3 +35,29 @@ export async function createCourse(data: {
 }): Promise<Course> {
   return apiPost<Course>('/courses', data);
 }
+
+/**
+ * Update an existing course.
+ */
+export async function updateCourse(
+  id: number,
+  data: {
+    title: string;
+    description?: string;
+    category: string;
+    level: string;
+    durationHours: number;
+    startDate: string;
+    endDate: string;
+  }
+): Promise<Course> {
+  return apiPut<Course>(`/courses/${id}`, data);
+}
+
+/**
+ * Delete a course.
+ */
+export async function deleteCourse(id: number): Promise<{ message?: string }> {
+  return apiDelete<{ message?: string }>(`/courses/${id}`);
+}
+

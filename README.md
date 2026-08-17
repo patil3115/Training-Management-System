@@ -170,6 +170,8 @@ The frontend will start at: **http://localhost:5173**
 | `GET` | `/api/courses` | List all courses (supports `?category=`, `?level=`, `?search=` query params) |
 | `GET` | `/api/courses/{id}` | Get course details by ID |
 | `POST` | `/api/courses` | Create a new course |
+| `PUT` | `/api/courses/{id}` | Update an existing course |
+| `DELETE` | `/api/courses/{id}` | Delete a course (prevents deletion if learners are enrolled) |
 
 ### Learners
 
@@ -240,11 +242,15 @@ curl http://localhost:5000/api/learners/1/enrollments
 
 | Route | Page | Description |
 |-------|------|-------------|
-| `/courses` | Course List | Browse and filter all courses |
-| `/courses/:id` | Course Details | View course details, enroll, view enrollments |
-| `/learners/:id/enrollments` | My Enrollments | View learner's enrollment history |
+| `/courses` | Course List | Browse and filter all courses (Learner) |
+| `/courses/:id` | Course Details | View course details, enroll, view enrollments (Learner) |
+| `/learners/:id/enrollments` | My Enrollments | View learner's enrollment history (Learner) |
 | `/my-enrollments` | Redirects | Redirects to `/learners/1/enrollments` |
 | `/profile` | Profile | Learner profile with enrollment lookup |
+| `/admin` | Admin Dashboard | Manage all courses (Create, Edit, Delete, View Enrollments) |
+| `/admin/courses/new` | Create Course | Form to publish a new course |
+| `/admin/courses/:id/edit` | Edit Course | Form to modify an existing course |
+| `/admin/courses/:id/enrollments` | Course Enrollments | Dedicated admin page showing enrolled learners per course |
 
 ---
 

@@ -20,6 +20,8 @@ export interface CourseCreateRequest {
   endDate: string;
 }
 
+export interface CourseUpdateRequest extends CourseCreateRequest {}
+
 export interface CourseFilters {
   category?: string;
   level?: string;

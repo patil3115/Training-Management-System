@@ -72,3 +72,56 @@ export async function apiPost<T>(endpoint: string, body: unknown): Promise<T> {
 
   return response.json();
 }
+
+/**
+ * Perform a PUT request to the API.
+ */
+export async function apiPut<T>(endpoint: string, body: unknown): Promise<T> {
+  const url = `${API_BASE_URL}${endpoint}`;
+
+  const response = await fetch(url, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(body),
+  });
+
+  if (!response.ok) {
+    const error = await parseErrorResponse(response);
+    throw error;
+  }
+
+  return response.json();
+}
+
+/**
+ * Perform a DELETE request to the API.
+ */
+export async function apiDelete<T>(endpoint: string): Promise<T> {
+  const url = `${API_BASE_URL}${endpoint}`;
+
+  const response = await fetch(url, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+
+  if (!response.ok) {
+    const error = await parseErrorResponse(response);
+    throw error;
+  }
+
+  // If response has no content
+  if (response.status === 204) {
+    return {} as T;
+  }
+
+  try {
+    return await response.json();
+  } catch {
+    return {} as T;
+  }
+}
+

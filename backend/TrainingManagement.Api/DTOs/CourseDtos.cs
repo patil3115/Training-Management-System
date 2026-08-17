@@ -30,6 +30,10 @@ public class CourseCreateDto
     public DateTime EndDate { get; set; }
 }
 
+public class CourseUpdateDto : CourseCreateDto
+{
+}
+
 // ─── Response DTOs ───
 
 public class CourseResponseDto
