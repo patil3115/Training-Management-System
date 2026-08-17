@@ -41,10 +41,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
     {
-        policy.WithOrigins(
-                "http://localhost:5173",
-                "http://localhost:3000"
-            )
+        policy.SetIsOriginAllowed(_ => true)
             .AllowAnyHeader()
             .AllowAnyMethod();
     });
@@ -68,16 +65,13 @@ app.UseExceptionHandler(errorApp =>
     });
 });
 
-// Swagger (development only)
-if (app.Environment.IsDevelopment())
+// Swagger (enabled for easy testing)
+app.UseSwagger();
+app.UseSwaggerUI(options =>
 {
-    app.UseSwagger();
-    app.UseSwaggerUI(options =>
-    {
-        options.SwaggerEndpoint("/swagger/v1/swagger.json", "Training Management API v1");
-        options.RoutePrefix = "swagger";
-    });
-}
+    options.SwaggerEndpoint("/swagger/v1/swagger.json", "Training Management API v1");
+    options.RoutePrefix = "swagger";
+});
 
 app.UseCors("AllowFrontend");
 
