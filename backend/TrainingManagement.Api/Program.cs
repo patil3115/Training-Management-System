@@ -47,6 +47,10 @@ builder.Services.AddCors(options =>
     });
 });
 
+// ─── Cloud Port Configuration (Render, Railway, Azure, Docker) ───
+var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
+
 var app = builder.Build();
 
 // ─── Middleware Pipeline ───
@@ -74,6 +78,10 @@ app.UseSwaggerUI(options =>
 });
 
 app.UseCors("AllowFrontend");
+
+// Root redirects to Swagger UI, plus health endpoint
+app.MapGet("/", () => Results.Redirect("/swagger"));
+app.MapGet("/health", () => Results.Ok(new { status = "healthy", service = "Training Management API" }));
 
 app.MapControllers();
 

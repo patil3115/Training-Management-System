@@ -16,8 +16,8 @@ FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS final
 WORKDIR /app
 COPY --from=build /app/publish .
 
-# Render and most cloud providers inject PORT environment variable (default to 8080 or 5000)
-ENV ASPNETCORE_URLS=http://+:8080
-EXPOSE 8080
+# Default port if not provided by host
+ENV PORT=8080
+EXPOSE 8080 10000
 
 ENTRYPOINT ["dotnet", "TrainingManagement.Api.dll"]
